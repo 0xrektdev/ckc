@@ -9,7 +9,7 @@ let currentPopup: any = undefined;
 // Waiting for the API to be ready
 WA.onInit().then(async () => {
     console.log('Scripting API ready');
-    console.log('Player tags: ',WA.player.tags)
+    console.log('Player tags: ', WA.player.tags);
 
     // Place the countdown GIF inside of the cinema screen
     const countdown = await WA.room.website.get('cinemaScreen');
@@ -35,17 +35,16 @@ WA.onInit().then(async () => {
         WA.room.showLayer('ctaDigitCodeSwitch');
     });
 
+    // Configuration for popups
     const config = [
         {
             zone: 'needHelp',
             message: 'From CoolKids for CoolKids',
-            cta: [
-                {
-                    label: 'Spread the word',
-                    className: 'primary',
-                    callback: () => WA.nav.openTab('https://twitter.com/intent/tweet?text=Just%20tried%20CoolKidsClub%20world%20and%20i%27m%20really%20impressed.%20@coolkidsclubsol&url=https://play.coolkidsclub.space'),
-                }
-            ]
+            cta: [{
+                label: 'Spread the word',
+                className: 'primary',
+                callback: () => WA.nav.openTab('https://twitter.com/intent/tweet?text=Just%20tried%20CoolKidsClub%20world%20and%20i%27m%20really%20impressed.%20@coolkidsclubsol&url=https://play.coolkidsclub.space'),
+            }]
         },
         {
             zone: 'followUs1',
@@ -176,7 +175,19 @@ WA.onInit().then(async () => {
                 }
             ]
         }
-    ]
+    ];
+
+    // Popup management functions
+    function openPopup(zoneName: string) {
+        const popupName = zoneName + 'Popup';
+        const zone = config.find((item) => {
+            return item.zone == zoneName;
+        });
+
+        if (typeof zone !== 'undefined') {
+            currentPopup = WA.ui.openPopup(popupName, zone.message, zone.cta);
+        }
+    }
 
     // Need Help / Follow Us
     WA.room.onEnterLayer('needHelp').subscribe(() => openPopup('needHelp'));
@@ -198,28 +209,28 @@ WA.onInit().then(async () => {
         openPopup('meetDesk');
     });
     WA.room.onLeaveLayer('meetDesk').subscribe(closePopup);
-    
+
     WA.room.onEnterLayer('workDesk').subscribe(() => {
         const dontShow = WA.state.loadVariable('dontShowWorkPopup');
         if (dontShow) return;
         openPopup('workDesk');
     });
     WA.room.onLeaveLayer('workDesk').subscribe(closePopup);
-    
+
     WA.room.onEnterLayer('collaborateDesk').subscribe(() => {
         const dontShow = WA.state.loadVariable('dontShowCollaboratePopup');
         if (dontShow) return;
         openPopup('collaborateDesk');
     });
     WA.room.onLeaveLayer('collaborateDesk').subscribe(closePopup);
-    
+
     WA.room.onEnterLayer('playDesk').subscribe(() => {
         const dontShow = WA.state.loadVariable('dontShowPlayPopup');
         if (dontShow) return;
         openPopup('playDesk');
     });
     WA.room.onLeaveLayer('playDesk').subscribe(closePopup);
-    
+
     WA.room.onEnterLayer('createDesk').subscribe(() => {
         const dontShow = WA.state.loadVariable('dontShowCreatePopup');
         if (dontShow) return;
@@ -238,27 +249,14 @@ WA.onInit().then(async () => {
     });
     WA.room.onLeaveLayer('toRoom3').subscribe(closePopup);
 
-    // Popup management functions
-    function openPopup(zoneName: string) {
-        const popupName = zoneName + 'Popup'
-        const zone = config.find((item) => {
-            return item.zone == zoneName
-        });
-
-        if (typeof zone !== 'undefined') {
-            // @ts-ignore otherwise we can't use zone.cta object
-            currentPopup = WA.ui.openPopup(popupName, zone.message, zone.cta)
-        }
-    }
-
-    // The line below bootstraps the Scripting API Extra library that adds a number of advanced properties/features to WorkAdventure
+    // Bootstrap extra features
     bootstrapExtra().then(() => {
         console.log('Scripting API Extra ready');
     }).catch(e => console.error(e));
 
 }).catch(e => console.error(e));
 
-function closePopup(){
+function closePopup() {
     if (currentPopup !== undefined) {
         currentPopup.close();
         currentPopup = undefined;
