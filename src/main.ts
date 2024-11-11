@@ -7,17 +7,9 @@ console.log('Script started successfully');
 let currentPopup: any = undefined;
 
 // Waiting for the API to be ready
-WA.onInit().then(() => {
+WA.onInit().then(async () => {
     console.log('Scripting API ready');
     console.log('Player tags: ',WA.player.tags)
-
-    // WA.room.area.onEnter('clock').subscribe(() => {
-    //     const today = new Date();
-    //     const time = today.getHours() + ":" + today.getMinutes();
-    //     currentPopup = WA.ui.openPopup("clockPopup", "It's " + time, []);
-    // })
-
-    // WA.room.area.onLeave('clock').subscribe(closePopup)
 
     // Place the countdown GIF inside of the cinema screen
     const countdown = await WA.room.website.get('cinemaScreen');
@@ -42,10 +34,6 @@ WA.onInit().then(() => {
     WA.room.onLeaveLayer('doorCode').subscribe(() => {
         WA.room.showLayer('ctaDigitCodeSwitch');
     });
-
-
-    // Manage popups
-    let currentPopup: any;
 
     const config = [
         {
@@ -190,15 +178,6 @@ WA.onInit().then(() => {
         }
     ]
 
-    // Webinar
-    /* Uncomment this if you want to display the webinar popup
-    WA.room.onEnterLayer('webinar', () => openPopup('webinar'));
-    WA.room.onLeaveLayer('webinar',() => {
-        closePopup()
-        WA.nav.closeCoWebSite()
-    });
-    */
-
     // Need Help / Follow Us
     WA.room.onEnterLayer('needHelp').subscribe(() => openPopup('needHelp'));
     WA.room.onLeaveLayer('needHelp').subscribe(closePopup);
@@ -271,7 +250,6 @@ WA.onInit().then(() => {
             currentPopup = WA.ui.openPopup(popupName, zone.message, zone.cta)
         }
     }
-
 
     // The line below bootstraps the Scripting API Extra library that adds a number of advanced properties/features to WorkAdventure
     bootstrapExtra().then(() => {
