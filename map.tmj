@@ -7551,6 +7551,11 @@
  "orientation":"orthogonal",
  "properties":[
         {
+         "name":"MapLink",
+         "type":"string",
+         "value":"https:\/\/0xrektdev.github.io\/ckc\/map.tmj"
+        }, 
+        {
          "name":"mapCopyright",
          "type":"string",
          "value":"CC-BY-SA 3.0 (http:\/\/creativecommons.org\/licenses\/by-sa\/3.0\/)"
@@ -7566,24 +7571,14 @@
          "value":"map.png"
         }, 
         {
-         "name":"mapLink",
-         "type":"string",
-         "value":"https:\/\/coolkidsclub.space\/map.json"
-        }, 
-        {
          "name":"mapName",
          "type":"string",
-         "value":"World"
+         "value":"Map"
         }, 
         {
          "name":"script",
          "type":"string",
          "value":"src\/main.ts"
-        }, 
-        {
-         "name":"scriptDisableModuleSupport",
-         "type":"bool",
-         "value":true
         }, 
         {
          "name":"tutorial",
