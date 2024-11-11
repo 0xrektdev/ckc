@@ -26,11 +26,11 @@ WA.onInit().then(async () => {
     countdown.height = 240;
 
     // Manage the animated CTAs
-    WA.room.onEnterLayer('toRoom3').subscribe(() => {
+    WA.room.onEnterLayer('toRoom3DigicodeZone').subscribe(() => {
         WA.room.hideLayer('doorTipSwitch');
     });
 
-    WA.room.onLeaveLayer('toRoom3').subscribe(() => {
+    WA.room.onLeaveLayer('toRoom3DigicodeZone').subscribe(() => {
         WA.room.showLayer('doorTipSwitch');
     });
 
@@ -165,96 +165,88 @@ WA.onInit().then(async () => {
                     callback: () => WA.state.saveVariable('dontShowCreatePopup', true).then(() => closePopup()),
                 }
             ]
-        },
-        {
-            zone: 'webinar',
-            message: 'LoremIpsum',
-            cta: [
-                {
-                    label: 'Close',
-                    className: 'normal',
-                    callback: () => closePopup(),
-                },
-                {
-                    label: 'Sign up',
-                    className: 'primary',
-                    callback: () => WA.nav.openCoWebSite('#'),
-                }
-            ]
         }
     ];
 
     // Popup management functions
     function openPopup(zoneName: string) {
+        console.log('Attempting to open popup for zone:', zoneName);
         const popupName = zoneName + 'Popup';
         const zone = config.find((item) => {
             return item.zone == zoneName;
         });
+        console.log('Found zone config:', zone);
 
         if (typeof zone !== 'undefined') {
+            console.log('Opening popup with name:', popupName, 'message:', zone.message);
             currentPopup = WA.ui.openPopup(popupName, zone.message, zone.cta);
+        } else {
+            console.log('No zone config found for:', zoneName);
         }
     }
 
     // Need Help / Follow Us
-    WA.room.onEnterLayer('needHelp').subscribe(() => openPopup('needHelp'));
-    WA.room.onLeaveLayer('needHelp').subscribe(closePopup);
+    WA.room.onEnterLayer('needHelpZone').subscribe(() => {
+        console.log('Entered needHelp zone');
+        openPopup('needHelp');
+    });
+    WA.room.onLeaveLayer('needHelpZone').subscribe(closePopup);
 
-    WA.room.onEnterLayer('followUs1').subscribe(() => openPopup('followUs1'));
-    WA.room.onLeaveLayer('followUs1').subscribe(closePopup);
+    WA.room.onEnterLayer('followUs1Zone').subscribe(() => openPopup('followUs1'));
+    WA.room.onLeaveLayer('followUs1Zone').subscribe(closePopup);
 
-    WA.room.onEnterLayer('followUs2').subscribe(() => openPopup('followUs2'));
-    WA.room.onLeaveLayer('followUs2').subscribe(closePopup);
+    WA.room.onEnterLayer('followUs2Zone').subscribe(() => openPopup('followUs2'));
+    WA.room.onLeaveLayer('followUs2Zone').subscribe(closePopup);
 
-    WA.room.onEnterLayer('followUs3').subscribe(() => openPopup('followUs3'));
-    WA.room.onLeaveLayer('followUs3').subscribe(closePopup);
+    WA.room.onEnterLayer('followUs3Zone').subscribe(() => openPopup('followUs3'));
+    WA.room.onLeaveLayer('followUs3Zone').subscribe(closePopup);
 
     // Room desks
-    WA.room.onEnterLayer('meetDesk').subscribe(() => {
+    WA.room.onEnterLayer('meetDeskZone').subscribe(() => {
         const dontShow = WA.state.loadVariable('dontShowMeetPopup');
         if (dontShow) return;
         openPopup('meetDesk');
     });
-    WA.room.onLeaveLayer('meetDesk').subscribe(closePopup);
+    WA.room.onLeaveLayer('meetDeskZone').subscribe(closePopup);
 
-    WA.room.onEnterLayer('workDesk').subscribe(() => {
+    WA.room.onEnterLayer('workDeskZone').subscribe(() => {
         const dontShow = WA.state.loadVariable('dontShowWorkPopup');
         if (dontShow) return;
         openPopup('workDesk');
     });
-    WA.room.onLeaveLayer('workDesk').subscribe(closePopup);
+    WA.room.onLeaveLayer('workDeskZone').subscribe(closePopup);
 
-    WA.room.onEnterLayer('collaborateDesk').subscribe(() => {
+    WA.room.onEnterLayer('collaborateDeskZone').subscribe(() => {
         const dontShow = WA.state.loadVariable('dontShowCollaboratePopup');
         if (dontShow) return;
         openPopup('collaborateDesk');
     });
-    WA.room.onLeaveLayer('collaborateDesk').subscribe(closePopup);
+    WA.room.onLeaveLayer('collaborateDeskZone').subscribe(closePopup);
 
-    WA.room.onEnterLayer('playDesk').subscribe(() => {
+    WA.room.onEnterLayer('playDeskZone').subscribe(() => {
         const dontShow = WA.state.loadVariable('dontShowPlayPopup');
         if (dontShow) return;
         openPopup('playDesk');
     });
-    WA.room.onLeaveLayer('playDesk').subscribe(closePopup);
+    WA.room.onLeaveLayer('playDeskZone').subscribe(closePopup);
 
-    WA.room.onEnterLayer('createDesk').subscribe(() => {
+    WA.room.onEnterLayer('createDeskZone').subscribe(() => {
         const dontShow = WA.state.loadVariable('dontShowCreatePopup');
         if (dontShow) return;
         openPopup('createDesk');
     });
-    WA.room.onLeaveLayer('createDesk').subscribe(closePopup);
+    WA.room.onLeaveLayer('createDeskZone').subscribe(closePopup);
 
     // Manage the popups to open the Room3 door
     WA.room.onEnterLayer('doorCode').subscribe(() => openPopup('doorCode'));
     WA.room.onLeaveLayer('doorCode').subscribe(closePopup);
 
-    WA.room.onEnterLayer('toRoom3').subscribe(() => {
+    WA.room.onEnterLayer('toRoom3DigicodeZone').subscribe(() => {
         const isDoorOpen = WA.state.loadVariable('room3Door');
         if (isDoorOpen) return;
         openPopup('toRoom3');
     });
-    WA.room.onLeaveLayer('toRoom3').subscribe(closePopup);
+    WA.room.onLeaveLayer('toRoom3DigicodeZone').subscribe(closePopup);
 
     // Bootstrap extra features
     bootstrapExtra().then(() => {
