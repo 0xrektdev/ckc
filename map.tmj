@@ -436,7 +436,7 @@
                         {
                          "name":"exitUrl",
                          "type":"string",
-                         "value":"conference.tmj#from-office"
+                         "value":"conference.tmj#from-map"
                         }],
                  "rotation":0,
                  "type":"area",
@@ -554,17 +554,17 @@
         {
          "name":"mapDescription",
          "type":"string",
-         "value":"A perfect virtual office to get started with WorkAdventure!"
+         "value":"A perfect virtual map to get started with WorkAdventure!"
         }, 
         {
          "name":"mapImage",
          "type":"string",
-         "value":"office.png"
+         "value":"map.png"
         }, 
         {
          "name":"mapName",
          "type":"string",
-         "value":"Office"
+         "value":"map"
         }, 
         {
          "name":"script",

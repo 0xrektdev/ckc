@@ -1,3 +1,3 @@
-# WorkAdventure Map Starter Kit - Src Folder
+# Enjoy
 
-In this directory you can put your scripts and other source code files.
+Enjoy

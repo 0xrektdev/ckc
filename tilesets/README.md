@@ -1,3 +1,3 @@
-# WorkAdventure Map Starter Kit - Tilesets Folder
+# Enjoy
 
-In this directory you should place the tileset files (PNGs) used to create your maps.
+Enjoy
