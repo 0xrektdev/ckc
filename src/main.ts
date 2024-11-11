@@ -1,10 +1,17 @@
 /// <reference types="@workadventure/iframe-api-typings" />
 
 import { bootstrapExtra } from "@workadventure/scripting-api-extra";
+import type { ButtonDescriptor } from '@workadventure/iframe-api-typings';
 
 console.log('Script started successfully');
 
 let currentPopup: any = undefined;
+
+interface PopupConfig {
+    zone: string;
+    message: string;
+    cta: ButtonDescriptor[];
+}
 
 // Waiting for the API to be ready
 WA.onInit().then(async () => {
@@ -36,7 +43,7 @@ WA.onInit().then(async () => {
     });
 
     // Configuration for popups
-    const config = [
+    const config: PopupConfig[] = [
         {
             zone: 'needHelp',
             message: 'From CoolKids for CoolKids',
