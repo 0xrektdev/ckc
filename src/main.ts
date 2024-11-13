@@ -18,6 +18,18 @@ WA.onInit().then(async () => {
     console.log('Scripting API ready');
     console.log('Player tags: ', WA.player.tags);
 
+    // Background music for the whole map
+    try {
+        const backgroundMusic = WA.sound.loadSound("./assets/background.mp3");
+        await backgroundMusic.play({
+            loop: true,
+            volume: 0.3  // Adjust volume as needed (0.0 to 1.0)
+        });
+        console.log('Background music started');
+    } catch (error) {
+        console.error('Error playing background music:', error);
+    }
+
     // Place the countdown GIF inside of the cinema screen
     const countdown = await WA.room.website.get('cinemaScreen');
     countdown.x = 1670;
@@ -25,21 +37,50 @@ WA.onInit().then(async () => {
     countdown.width = 320;
     countdown.height = 240;
 
-    // Manage the animated CTAs
+    // At the door
+    WA.room.onEnterLayer('zone/toRoom3Zone').subscribe(() => {
+        console.log('At the door');
+        WA.room.hideLayer('doorTipSwitch');  // Reveals Mr Robot location
+        openPopup('toRoom3');  // "Want to access the gaming room? Mr Robot can help you!"
+    });
+
+    WA.room.onLeaveLayer('zone/toRoom3Zone').subscribe(() => {
+        console.log('Leaving door');
+        closePopup();
+        WA.room.showLayer('doorTipSwitch');  // Hide Mr Robot location
+    });
+
+    // At Mr Robot location (where doorTipSwitch is hidden)
+    WA.room.onEnterLayer('doorTipSwitch').subscribe(() => {
+        console.log('At Mr Robot');
+        openPopup('doorCode');  // Shows the 420 code
+        WA.room.showLayer('ctaDigitCodeSwitch');  // Show keypad location
+    });
+
+    WA.room.onLeaveLayer('doorTipSwitch').subscribe(() => {
+        console.log('Leaving Mr Robot');
+        closePopup();
+        WA.room.hideLayer('ctaDigitCodeSwitch');  // Hide keypad location
+    });
+
+    // At the keypad
     WA.room.onEnterLayer('toRoom3DigicodeZone').subscribe(() => {
-        WA.room.hideLayer('doorTipSwitch');
-    });
-
-    WA.room.onLeaveLayer('toRoom3DigicodeZone').subscribe(() => {
-        WA.room.showLayer('doorTipSwitch');
-    });
-
-    WA.room.onEnterLayer('doorCode').subscribe(() => {
+        console.log('At keypad');
+        const isDoorOpen = WA.state.loadVariable('room3Door');
+        if (isDoorOpen) return;
+        
+        // Show keypad interface
+        WA.room.hideLayer('ctaDigitCode');
         WA.room.hideLayer('ctaDigitCodeSwitch');
     });
 
-    WA.room.onLeaveLayer('doorCode').subscribe(() => {
-        WA.room.showLayer('ctaDigitCodeSwitch');
+    WA.room.onLeaveLayer('toRoom3DigicodeZone').subscribe(() => {
+        console.log('Leaving keypad');
+        closePopup();
+        if (!WA.state.loadVariable('room3Door')) {
+            WA.room.showLayer('ctaDigitCode');
+            WA.room.showLayer('ctaDigitCodeSwitch');
+        }
     });
 
     // Configuration for popups
@@ -170,6 +211,11 @@ WA.onInit().then(async () => {
 
     // Popup management functions
     function openPopup(zoneName: string) {
+        // Close any existing popup first
+        if (currentPopup !== undefined) {
+            closePopup();
+        }
+
         console.log('Attempting to open popup for zone:', zoneName);
         const popupName = zoneName + 'Popup';
         const zone = config.find((item) => {
@@ -201,52 +247,56 @@ WA.onInit().then(async () => {
     WA.room.onEnterLayer('followUs3Zone').subscribe(() => openPopup('followUs3'));
     WA.room.onLeaveLayer('followUs3Zone').subscribe(closePopup);
 
-    // Room desks
-    WA.room.onEnterLayer('meetDeskZone').subscribe(() => {
+    // Room desks with improved popup management
+    WA.room.onEnterLayer('zone/meetDeskZone').subscribe(() => {
+        closePopup();  // Close any existing popup first
         const dontShow = WA.state.loadVariable('dontShowMeetPopup');
         if (dontShow) return;
         openPopup('meetDesk');
     });
-    WA.room.onLeaveLayer('meetDeskZone').subscribe(closePopup);
-
-    WA.room.onEnterLayer('workDeskZone').subscribe(() => {
+    WA.room.onLeaveLayer('zone/meetDeskZone').subscribe(() => {
+        closePopup();
+    });
+    
+    WA.room.onEnterLayer('zone/workDeskZone').subscribe(() => {
+        closePopup();
         const dontShow = WA.state.loadVariable('dontShowWorkPopup');
         if (dontShow) return;
         openPopup('workDesk');
     });
-    WA.room.onLeaveLayer('workDeskZone').subscribe(closePopup);
-
-    WA.room.onEnterLayer('collaborateDeskZone').subscribe(() => {
+    WA.room.onLeaveLayer('zone/workDeskZone').subscribe(() => {
+        closePopup();
+    });
+    
+    WA.room.onEnterLayer('zone/collaborateDeskZone').subscribe(() => {
+        closePopup();
         const dontShow = WA.state.loadVariable('dontShowCollaboratePopup');
         if (dontShow) return;
         openPopup('collaborateDesk');
     });
-    WA.room.onLeaveLayer('collaborateDeskZone').subscribe(closePopup);
-
-    WA.room.onEnterLayer('playDeskZone').subscribe(() => {
+    WA.room.onLeaveLayer('zone/collaborateDeskZone').subscribe(() => {
+        closePopup();
+    });
+    
+    WA.room.onEnterLayer('zone/playDeskZone').subscribe(() => {
+        closePopup();
         const dontShow = WA.state.loadVariable('dontShowPlayPopup');
         if (dontShow) return;
         openPopup('playDesk');
     });
-    WA.room.onLeaveLayer('playDeskZone').subscribe(closePopup);
-
-    WA.room.onEnterLayer('createDeskZone').subscribe(() => {
+    WA.room.onLeaveLayer('zone/playDeskZone').subscribe(() => {
+        closePopup();
+    });
+    
+    WA.room.onEnterLayer('zone/createDeskZone').subscribe(() => {
+        closePopup();
         const dontShow = WA.state.loadVariable('dontShowCreatePopup');
         if (dontShow) return;
         openPopup('createDesk');
     });
-    WA.room.onLeaveLayer('createDeskZone').subscribe(closePopup);
-
-    // Manage the popups to open the Room3 door
-    WA.room.onEnterLayer('doorCode').subscribe(() => openPopup('doorCode'));
-    WA.room.onLeaveLayer('doorCode').subscribe(closePopup);
-
-    WA.room.onEnterLayer('toRoom3DigicodeZone').subscribe(() => {
-        const isDoorOpen = WA.state.loadVariable('room3Door');
-        if (isDoorOpen) return;
-        openPopup('toRoom3');
+    WA.room.onLeaveLayer('zone/createDeskZone').subscribe(() => {
+        closePopup();
     });
-    WA.room.onLeaveLayer('toRoom3DigicodeZone').subscribe(closePopup);
 
     // Bootstrap extra features
     bootstrapExtra().then(() => {
