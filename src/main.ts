@@ -18,6 +18,12 @@ WA.onInit().then(async () => {
     console.log('Scripting API ready');
     console.log('Player tags: ', WA.player.tags);
 
+     // Disable and turn off camera/microphone
+     WA.controls.disableWebcam(); 
+     WA.controls.disableMicrophone();
+     WA.controls.turnOffWebcam(); 
+     WA.controls.turnOffMicrophone();
+
     // Background music for the whole map
     // Declare variables at the top scope
     let backgroundMusic: any;
