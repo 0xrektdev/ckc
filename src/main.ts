@@ -22,6 +22,11 @@ WA.onInit().then(async () => {
     let currentBackgroundMusic: any = null;
     let websiteMusic: any = null;
 
+    // Debug: Log all layer events to verify our layer name
+    WA.room.onEnterLayer().subscribe((layer) => {
+        console.log('Entered layer:', layer);
+    });
+
     // Main background music
     try {
         currentBackgroundMusic = WA.sound.loadSound("./assets/background.mp3");
@@ -45,9 +50,10 @@ WA.onInit().then(async () => {
     // Handle entering website area
     WA.room.onEnterLayer('embed/websiteSignUp').subscribe(() => {
         console.log('Entering website area');
-        // Lower main background music volume
+        
+        // Stop main background music
         if (currentBackgroundMusic) {
-            currentBackgroundMusic.setVolume(0.1);
+            currentBackgroundMusic.stop();
         }
         
         // Play website music
@@ -62,14 +68,18 @@ WA.onInit().then(async () => {
     // Handle leaving website area
     WA.room.onLeaveLayer('embed/websiteSignUp').subscribe(() => {
         console.log('Leaving website area');
-        // Restore main background music volume
-        if (currentBackgroundMusic) {
-            currentBackgroundMusic.setVolume(0.3);
-        }
         
         // Stop website music
         if (websiteMusic) {
             websiteMusic.stop();
+        }
+        
+        // Restart main background music
+        if (currentBackgroundMusic) {
+            currentBackgroundMusic.play({
+                loop: true,
+                volume: 0.3
+            });
         }
     });
 
