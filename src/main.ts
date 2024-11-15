@@ -22,9 +22,9 @@ WA.onInit().then(async () => {
     let currentBackgroundMusic: any = null;
     let websiteMusic: any = null;
 
-    // Debug: Log all layer events to verify our layer name
-    WA.room.onEnterLayer().subscribe((layer) => {
-        console.log('Entered layer:', layer);
+    // Debug: Log all layer events
+    WA.room.onEnterLayer((layerName: string) => {  // Added parameter
+        console.log('Entered layer:', layerName);
     });
 
     // Main background music
