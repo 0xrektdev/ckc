@@ -18,57 +18,45 @@ WA.onInit().then(async () => {
     console.log('Scripting API ready');
     console.log('Player tags: ', WA.player.tags);
 
-    // Background music for the whole map
-    let currentBackgroundMusic: any = null;
-    let websiteMusic: any = null;
-    
-    // Main background music
-    try {
-        currentBackgroundMusic = WA.sound.loadSound("./assets/background.mp3");
-        await currentBackgroundMusic.play({
-            loop: true,
-            volume: 0.3
-        });
-        console.log('Background music started');
-    } catch (error) {
-        console.error('Error playing background music:', error);
-    }
-    
-    // Website area music
-    try {
-        websiteMusic = WA.sound.loadSound("./assets/website-music.mp3");
-    } catch (error) {
-        console.error('Error loading website music:', error);
-    }
-    
-    // Handle entering website area
-    WA.room.onEnterLayer('embed/websiteSignUp').subscribe(() => {
-        // Fade out main background music
-        if (currentBackgroundMusic) {
-            currentBackgroundMusic.fade(0.3, 0.1, 1000);
-        }
-        
-        // Play website music
-        if (websiteMusic) {
-            websiteMusic.play({
-                loop: true,
-                volume: 0.3
-            });
-        }
+    // Debug: Log all available layers
+WA.room.onEnterLayer().subscribe((layer) => {
+    console.log('Entered layer:', layer);
+});
+
+WA.room.onLeaveLayer().subscribe((layer) => {
+    console.log('Left layer:', layer);
+});
+
+// Main background music setup
+let currentBackgroundMusic: any = null;
+let websiteMusic: any = null;
+
+try {
+    currentBackgroundMusic = WA.sound.loadSound("./assets/background.mp3");
+    await currentBackgroundMusic.play({
+        loop: true,
+        volume: 0.3
     });
-    
-    // Handle leaving website area
-    WA.room.onLeaveLayer('embed/websiteSignUp').subscribe(() => {
-        // Restore main background music volume
-        if (currentBackgroundMusic) {
-            currentBackgroundMusic.fade(0.1, 0.3, 1000);
-        }
-        
-        // Stop website music
-        if (websiteMusic) {
-            websiteMusic.stop();
-        }
+    console.log('Background music started');
+} catch (error) {
+    console.error('Error playing background music:', error);
+}
+
+// Website area music setup with debug
+try {
+    websiteMusic = WA.sound.loadSound("./assets/website-music.mp3");
+    console.log('Website music loaded successfully');
+} catch (error) {
+    console.error('Error loading website music:', error);
+}
+
+// Debug: Try different layer name variations
+['websiteSignUp', 'embed/websiteSignUp', 'embed.websiteSignUp'].forEach(layerName => {
+    WA.room.onEnterLayer(layerName).subscribe(() => {
+        console.log(`Detected enter on layer: ${layerName}`);
+        // Your music logic here
     });
+});
 
     // Place the countdown GIF inside of the cinema screen
     const countdown = await WA.room.website.get('cinemaScreen');
