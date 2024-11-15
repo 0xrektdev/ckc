@@ -19,8 +19,13 @@ WA.onInit().then(async () => {
     console.log('Player tags: ', WA.player.tags);
 
     // Background music for the whole map
+    // Declare variables at the top scope
+    let backgroundMusic: any;
+    let websiteMusic: any;
+
+    // Background music for the whole map
     try {
-        const backgroundMusic = WA.sound.loadSound("./assets/background.mp3");
+        backgroundMusic = WA.sound.loadSound("./assets/background.mp3");
         await backgroundMusic.play({
             loop: true,
             volume: 0.3
@@ -32,7 +37,7 @@ WA.onInit().then(async () => {
 
     // Website area music
     try {
-        const websiteMusic = WA.sound.loadSound("./assets/website-music.mp3");
+        websiteMusic = WA.sound.loadSound("./assets/website-music.mp3");
         
         // Handle entering website area
         WA.room.onEnterLayer('embed/websiteSignUp').subscribe(() => {
