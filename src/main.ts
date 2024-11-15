@@ -18,45 +18,60 @@ WA.onInit().then(async () => {
     console.log('Scripting API ready');
     console.log('Player tags: ', WA.player.tags);
 
-    // Debug: Log all available layers
-WA.room.onEnterLayer().subscribe((layer) => {
-    console.log('Entered layer:', layer);
-});
+    // Background music for the whole map
+    let currentBackgroundMusic: any = null;
+    let websiteMusic: any = null;
 
-WA.room.onLeaveLayer().subscribe((layer) => {
-    console.log('Left layer:', layer);
-});
+    // Main background music
+    try {
+        currentBackgroundMusic = WA.sound.loadSound("./assets/background.mp3");
+        await currentBackgroundMusic.play({
+            loop: true,
+            volume: 0.3
+        });
+        console.log('Background music started');
+    } catch (error) {
+        console.error('Error playing background music:', error);
+    }
 
-// Main background music setup
-let currentBackgroundMusic: any = null;
-let websiteMusic: any = null;
+    // Website area music
+    try {
+        websiteMusic = WA.sound.loadSound("./assets/website-music.mp3");
+        console.log('Website music loaded');
+    } catch (error) {
+        console.error('Error loading website music:', error);
+    }
 
-try {
-    currentBackgroundMusic = WA.sound.loadSound("./assets/background.mp3");
-    await currentBackgroundMusic.play({
-        loop: true,
-        volume: 0.3
+    // Handle entering website area
+    WA.room.onEnterLayer('embed/websiteSignUp').subscribe(() => {
+        console.log('Entering website area');
+        // Lower main background music volume
+        if (currentBackgroundMusic) {
+            currentBackgroundMusic.setVolume(0.1);
+        }
+        
+        // Play website music
+        if (websiteMusic) {
+            websiteMusic.play({
+                loop: true,
+                volume: 0.3
+            });
+        }
     });
-    console.log('Background music started');
-} catch (error) {
-    console.error('Error playing background music:', error);
-}
 
-// Website area music setup with debug
-try {
-    websiteMusic = WA.sound.loadSound("./assets/website-music.mp3");
-    console.log('Website music loaded successfully');
-} catch (error) {
-    console.error('Error loading website music:', error);
-}
-
-// Debug: Try different layer name variations
-['websiteSignUp', 'embed/websiteSignUp', 'embed.websiteSignUp'].forEach(layerName => {
-    WA.room.onEnterLayer(layerName).subscribe(() => {
-        console.log(`Detected enter on layer: ${layerName}`);
-        // Your music logic here
+    // Handle leaving website area
+    WA.room.onLeaveLayer('embed/websiteSignUp').subscribe(() => {
+        console.log('Leaving website area');
+        // Restore main background music volume
+        if (currentBackgroundMusic) {
+            currentBackgroundMusic.setVolume(0.3);
+        }
+        
+        // Stop website music
+        if (websiteMusic) {
+            websiteMusic.stop();
+        }
     });
-});
 
     // Place the countdown GIF inside of the cinema screen
     const countdown = await WA.room.website.get('cinemaScreen');
