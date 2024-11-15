@@ -19,18 +19,9 @@ WA.onInit().then(async () => {
     console.log('Player tags: ', WA.player.tags);
 
     // Background music for the whole map
-    let currentBackgroundMusic: any = null;
-    let websiteMusic: any = null;
-
-    // Debug: Log all layer events
-    WA.room.onEnterLayer((layerName: string) => {  // Added parameter
-        console.log('Entered layer:', layerName);
-    });
-
-    // Main background music
     try {
-        currentBackgroundMusic = WA.sound.loadSound("./assets/background.mp3");
-        await currentBackgroundMusic.play({
+        const backgroundMusic = WA.sound.loadSound("./assets/background.mp3");
+        await backgroundMusic.play({
             loop: true,
             volume: 0.3
         });
@@ -41,48 +32,42 @@ WA.onInit().then(async () => {
 
     // Website area music
     try {
-        websiteMusic = WA.sound.loadSound("./assets/website-music.mp3");
-        console.log('Website music loaded');
+        const websiteMusic = WA.sound.loadSound("./assets/website-music.mp3");
+        
+        // Handle entering website area
+        WA.room.onEnterLayer('embed/websiteSignUp').subscribe(() => {
+            try {
+                // Stop background music
+                backgroundMusic.stop();
+                
+                // Play website music
+                websiteMusic.play({
+                    loop: true,
+                    volume: 0.3
+                });
+            } catch (error) {
+                console.error('Error switching to website music:', error);
+            }
+        });
+
+        // Handle leaving website area
+        WA.room.onLeaveLayer('embed/websiteSignUp').subscribe(() => {
+            try {
+                // Stop website music
+                websiteMusic.stop();
+                
+                // Restart background music
+                backgroundMusic.play({
+                    loop: true,
+                    volume: 0.3
+                });
+            } catch (error) {
+                console.error('Error returning to background music:', error);
+            }
+        });
     } catch (error) {
         console.error('Error loading website music:', error);
     }
-
-    // Handle entering website area
-    WA.room.onEnterLayer('embed/websiteSignUp').subscribe(() => {
-        console.log('Entering website area');
-        
-        // Stop main background music
-        if (currentBackgroundMusic) {
-            currentBackgroundMusic.stop();
-        }
-        
-        // Play website music
-        if (websiteMusic) {
-            websiteMusic.play({
-                loop: true,
-                volume: 0.3
-            });
-        }
-    });
-
-    // Handle leaving website area
-    WA.room.onLeaveLayer('embed/websiteSignUp').subscribe(() => {
-        console.log('Leaving website area');
-        
-        // Stop website music
-        if (websiteMusic) {
-            websiteMusic.stop();
-        }
-        
-        // Restart main background music
-        if (currentBackgroundMusic) {
-            currentBackgroundMusic.play({
-                loop: true,
-                volume: 0.3
-            });
-        }
-    });
-
     // Place the countdown GIF inside of the cinema screen
     const countdown = await WA.room.website.get('cinemaScreen');
     countdown.x = 1670;
